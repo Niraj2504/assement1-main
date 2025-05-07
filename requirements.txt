@@ -8,3 +8,4 @@ langchain-core
 langgraph
 groq
 langchain_groq
+python-multipart
