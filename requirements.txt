@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+jinja2
+python-dotenv
+requests
+langchain
+langchain-core
+langgraph
+groq
+langchain_groq

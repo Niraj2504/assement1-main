@@ -1,0 +1,45 @@
+<form id="chat-form" class="flex flex-col gap-2">
+  <input type="file" id="file-input" class="text-sm" />
+  <div class="flex gap-2">
+    <input type="text" id="user-input" class="flex-1 px-3 py-2 text-sm border rounded-lg
+           focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Type your message..." required>
+    <button type="submit" class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+      Send
+    </button>
+
+    <div id="chat-box"></div>
+  </div>
+</form>
+
+<script>
+  const form = document.getElementById('chat-form');
+  const input = document.getElementById('user-input');
+  const fileEl = document.getElementById('file-input');
+  const box = document.getElementById('chat-box');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    const file = fileEl.files[0] || null;
+    if (!text && !file) return;
+
+    box.innerHTML += `<div><strong class="text-indigo-600">You:</strong> ${text || '(file)'}</div>`;
+    box.scrollTop = box.scrollHeight;
+    input.value = '';
+    fileEl.value = '';
+
+    const fd = new FormData();
+    fd.append('query', text);
+    if (file) fd.append('file', file);
+    fd.append('session_id', localStorage.session_id ||= crypto.randomUUID());
+
+    try {
+      const res = await fetch('/query', { method: 'POST', body: fd });
+      const data = await res.json();
+      box.innerHTML += `<div><strong class="text-green-600">Bot:</strong> ${data.response}</div>`;
+    } catch (err) {
+      box.innerHTML += `<div class="text-red-500">Error: ${err.message}</div>`;
+    }
+    box.scrollTop = box.scrollHeight;
+  });
+</script>
